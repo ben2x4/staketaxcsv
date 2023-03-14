@@ -8,6 +8,7 @@ env/*
 src/staketaxcsv/_reports/*
 src/staketaxcsv/sol/data_staking_rewards/*.csv
 sample.env
+venv/*
 
 # pycharm
 .idea/*
