@@ -25,6 +25,10 @@ def process_tx(wallet_address, elem, exporter):
         if result:
             continue
 
-        staketaxcsv.common.ibc.handle.handle_unknown_detect_transfers(exporter, txinfo, msginfo)
+        _handle_custom_msg(exporter, txinfo, msginfo)
 
     return txinfo
+
+
+def _handle_custom_msg(exporter, txinfo, msginfo):
+    staketaxcsv.common.ibc.handle.handle_unknown_detect_transfers(exporter, txinfo, msginfo)
