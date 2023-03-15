@@ -2,6 +2,7 @@ from staketaxcsv.common.ExporterTypes import TX_TYPE_UNKNOWN, TX_TYPE_TRADE
 import staketaxcsv.common.ibc.handle
 import staketaxcsv.common.ibc.make_tx
 import staketaxcsv.common.ibc.util_ibc
+import staketaxcsv.juno.constants
 
 
 def handle_execute_contract(exporter, txinfo, msginfo):
@@ -32,7 +33,7 @@ def get_cw20_transfers_in(msginfo):
     transfers = []
     for msg in msginfo.wasm:
         if is_cw20_transfer_message(msg) and msg.get("to") == msginfo.message.get("sender"):
-            transfers.append((msg.get("amount"), msg.get("_contract_address")))
+            transfers.append(format_transfer(msg))
     return transfers
 
 
@@ -40,8 +41,21 @@ def get_cw20_transfers_out(msginfo):
     transfers = []
     for msg in msginfo.wasm:
         if (is_cw20_transfer_message(msg) or is_cw20_transfer_from_message(msg)) and msg.get("from") == msginfo.message.get("sender"):
-            transfers.append((msg.get("amount"), msg.get("_contract_address")))
+            transfers.append(format_transfer(msg))
     return transfers
+
+
+def format_transfer(msg):
+    contract_address = msg.get("_contract_address")
+    denom = ""
+    if contract_address in staketaxcsv.juno.constants.CONTRACT_DENOMS:
+        denom = staketaxcsv.juno.constants.CONTRACT_DENOMS.get(contract_address)
+    else:
+        denom = contract_address
+
+    amount = float(msg.get("amount")) / 1000000
+
+    return (amount, denom)
 
 
 def is_cw20_transfer_message(msg):
