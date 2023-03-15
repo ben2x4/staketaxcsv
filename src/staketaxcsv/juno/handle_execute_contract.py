@@ -12,7 +12,7 @@ def handle_execute_contract(exporter, txinfo, msginfo):
     rows = []
     if len(transfers_in) == 0 and len(transfers_out) == 0:
         rows.append(staketaxcsv.common.ibc.make_tx._make_tx(txinfo, msginfo, "", "", "", "", tx_type=TX_TYPE_UNKNOWN))
-    elif len(transfers_in) == 1 and len(transfers_out):
+    elif len(transfers_in) == 1 and len(transfers_out) == 1:
         sent_amount, sent_currency = transfers_out[0]
         received_amount, received_currency = transfers_in[0]
         rows.append(staketaxcsv.common.ibc.make_tx._make_tx(txinfo, msginfo, sent_amount, sent_currency, received_amount, received_currency, tx_type=TX_TYPE_TRADE))
