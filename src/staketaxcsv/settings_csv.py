@@ -5,7 +5,7 @@ import os
 ALGO_HIST_INDEXER_NODE = os.environ.get("STAKETAX_ALGO_HIST_INDEXER_NODE", "https://indexer.algoexplorerapi.io")
 ALGO_INDEXER_NODE = os.environ.get("STAKETAX_ALGO_INDEXER_NODE", "https://algoindexer.algoexplorerapi.io")
 ALGO_NFDOMAINS = os.environ.get("STAKETAX_ALGO_NFDOMAINS", "https://api.nf.domains")
-ATOM_NODE = os.environ.get("STAKETAX_ATOM_NODE", "https://api.cosmos.network")
+ATOM_NODE = os.environ.get("STAKETAX_ATOM_NODE", "https://api-cosmoshub.pupmos.network")
 BLD_NODE = os.environ.get("STAKETAX_BLD_NODE", "https://main.api.agoric.net")
 BTSG_NODE = os.environ.get("STAKETAX_BTSG_NODE", "https://lcd.explorebitsong.com")
 COVALENT_NODE = os.environ.get("STAKETAX_COVALENT_NODE", "https://api.covalenthq.com")
@@ -14,7 +14,7 @@ DVPN_RPC_NODE = os.environ.get("STAKETAX_DVPN_RPC_NODE", "https://rpc.sentinel.c
 EVMOS_NODE = os.environ.get("STAKETAX_EVMOS_NODE", "")
 FET_NODE = os.environ.get("STAKETAX_FET_NODE", "https://rest-fetchhub.fetch.ai")
 HUAHUA_NODE = os.environ.get("STAKETAX_HUAHUA_NODE", "")
-JUNO_NODE = os.environ.get("STAKETAX_JUNO_NODE", "")
+JUNO_NODE = os.environ.get("STAKETAX_JUNO_NODE", "https://api.juno.kingnodes.com")
 JUNO_RPC_NODES = [
     "https://rpc-archive.junonetwork.io",      # 4136532 to now
     "https://rpc-v3-archive.junonetwork.io",   # 2578099 to #4136530

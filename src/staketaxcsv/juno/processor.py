@@ -4,6 +4,8 @@ import staketaxcsv.common.ibc.handle
 import staketaxcsv.common.ibc.processor
 import staketaxcsv.juno.constants as co
 from staketaxcsv.juno.config_juno import localconfig
+from staketaxcsv.osmo import util_osmo
+import staketaxcsv.juno.handle_execute_contract
 from staketaxcsv.settings_csv import JUNO_NODE
 
 
@@ -25,6 +27,15 @@ def process_tx(wallet_address, elem, exporter):
         if result:
             continue
 
-        staketaxcsv.common.ibc.handle.handle_unknown_detect_transfers(exporter, txinfo, msginfo)
+        _handle_custom_msg(exporter, txinfo, msginfo)
 
     return txinfo
+
+
+def _handle_custom_msg(exporter, txinfo, msginfo):
+    msg_type = util_osmo._msg_type(msginfo)
+    print(msg_type)
+    if msg_type == co.MSG_TYPE_EXECUTE_CONTRACT:
+        staketaxcsv.juno.handle_execute_contract.handle_execute_contract(exporter, txinfo, msginfo)
+    else:
+        staketaxcsv.common.ibc.handle.handle_unknown_detect_transfers(exporter, txinfo, msginfo)
