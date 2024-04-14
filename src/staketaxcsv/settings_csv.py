@@ -2,10 +2,14 @@ import os
 
 # Environment variables (required for each respective report)
 
-ALGO_HIST_INDEXER_NODE = os.environ.get("STAKETAX_ALGO_HIST_INDEXER_NODE", "https://indexer.algoexplorerapi.io")
-ALGO_INDEXER_NODE = os.environ.get("STAKETAX_ALGO_INDEXER_NODE", "https://algoindexer.algoexplorerapi.io")
+ALGO_HIST_INDEXER_NODE = os.environ.get(
+    "STAKETAX_ALGO_HIST_INDEXER_NODE", "https://indexer.algoexplorerapi.io"
+)
+ALGO_INDEXER_NODE = os.environ.get(
+    "STAKETAX_ALGO_INDEXER_NODE", "https://algoindexer.algoexplorerapi.io"
+)
 ALGO_NFDOMAINS = os.environ.get("STAKETAX_ALGO_NFDOMAINS", "https://api.nf.domains")
-ATOM_NODE = os.environ.get("STAKETAX_ATOM_NODE", "https://api-cosmoshub.pupmos.network")
+ATOM_NODE = os.environ.get("STAKETAX_ATOM_NODE", "https://cosmos-rest.publicnode.com")
 BLD_NODE = os.environ.get("STAKETAX_BLD_NODE", "https://main.api.agoric.net")
 BTSG_NODE = os.environ.get("STAKETAX_BTSG_NODE", "https://lcd.explorebitsong.com")
 COVALENT_NODE = os.environ.get("STAKETAX_COVALENT_NODE", "https://api.covalenthq.com")
@@ -14,11 +18,11 @@ DVPN_RPC_NODE = os.environ.get("STAKETAX_DVPN_RPC_NODE", "https://rpc.sentinel.c
 EVMOS_NODE = os.environ.get("STAKETAX_EVMOS_NODE", "")
 FET_NODE = os.environ.get("STAKETAX_FET_NODE", "https://rest-fetchhub.fetch.ai")
 HUAHUA_NODE = os.environ.get("STAKETAX_HUAHUA_NODE", "")
-JUNO_NODE = os.environ.get("STAKETAX_JUNO_NODE", "https://api.juno.kingnodes.com")
+JUNO_NODE = os.environ.get("STAKETAX_JUNO_NODE", "https://juno-rest.publicnode.com/")
 JUNO_RPC_NODES = [
-    "https://rpc-archive.junonetwork.io",      # 4136532 to now
-    "https://rpc-v3-archive.junonetwork.io",   # 2578099 to #4136530
-    "https://rpc-v2-archive.junonetwork.io",   # 1 to #2578097
+    "https://rpc-archive.junonetwork.io",  # 4136532 to now
+    "https://rpc-v3-archive.junonetwork.io",  # 2578099 to #4136530
+    "https://rpc-v2-archive.junonetwork.io",  # 1 to #2578097
 ]
 KUJI_NODE = os.environ.get("STAKETAX_KUJI_NODE", "")
 MNTL_NODE = os.environ.get("STAKETAX_MNTL_NODE", "https://rest.assetmantle.one")
@@ -28,11 +32,15 @@ ROWAN_NODE = os.environ.get("STAKETAX_ROWAN_NODE", "")
 SCRT_NODE = os.environ.get("STAKETAX_SCRT_NODE", "")
 SOL_NODE = os.environ.get("STAKETAX_SOL_NODE", "https://api.mainnet-beta.solana.com")
 STARS_NODE = os.environ.get("STAKETAX_STARS_NODE", "https://rest.stargaze-apis.com")
-STARS_RPC_NODE = os.environ.get("STAKETAX_STARS_RPC_NODE", "https://rpc-stargaze.ezstaking.dev/")
+STARS_RPC_NODE = os.environ.get(
+    "STAKETAX_STARS_RPC_NODE", "https://rpc-stargaze.ezstaking.dev/"
+)
 STARS_RPC_NODES = [STARS_RPC_NODE]
 TERRA_LCD_NODE = os.environ.get("STAKETAX_TERRA_LCD_NODE", "")
 TORI_NODE = os.environ.get("STAKETAX_TORI_NODE", "")
-LUNA2_LCD_NODE = os.environ.get("STAKETAX_LUNA2_LCD_NODE", "https://phoenix-lcd.terra.dev")
+LUNA2_LCD_NODE = os.environ.get(
+    "STAKETAX_LUNA2_LCD_NODE", "https://phoenix-lcd.terra.dev"
+)
 
 # Optional environment variables
 COVALENT_API_KEY = os.environ.get("STAKETAX_COVALENT_API_KEY", "")
@@ -62,9 +70,13 @@ TICKER_SOL = "SOL"
 TICKER_STARS = "STARS"
 TICKER_TORI = "TORI"
 
-DONATION_WALLETS = set([v for k, v in os.environ.items() if k.startswith("DONATION_WALLET_")])
+DONATION_WALLETS = set(
+    [v for k, v in os.environ.items() if k.startswith("DONATION_WALLET_")]
+)
 
 MESSAGE_ADDRESS_NOT_FOUND = "Wallet address not found"
-MESSAGE_STAKING_ADDRESS_FOUND = "Staking address found.  Please input the main wallet address instead."
+MESSAGE_STAKING_ADDRESS_FOUND = (
+    "Staking address found.  Please input the main wallet address instead."
+)
 
 REPORTS_DIR = os.path.dirname(os.path.realpath(__file__)) + "/_reports"

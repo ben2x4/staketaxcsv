@@ -65,9 +65,7 @@ class RpcAPI:
 
     def get_tx(self, txid):
         uri_path = "/tx"
-        query_params = {
-            "hash": "0x" + txid
-        }
+        query_params = {"hash": "0x" + txid}
         data = self._query(uri_path, query_params, sleep_seconds=1)
         return data.get("result", None)
 
@@ -99,8 +97,16 @@ def get_tx(node, txid, normalize=True):
     return elem
 
 
-def get_txs_all(node, wallet_address, progress, max_txs, limit=TXS_LIMIT_PER_QUERY, debug=False,
-                stage_name="default", events_types=None):
+def get_txs_all(
+    node,
+    wallet_address,
+    progress,
+    max_txs,
+    limit=TXS_LIMIT_PER_QUERY,
+    debug=False,
+    stage_name="default",
+    events_types=None,
+):
     api = RpcAPI(node)
     api.debug = debug
     events_types = events_types if events_types else EVENTS_TYPE_LIST_DEFAULT
@@ -114,7 +120,9 @@ def get_txs_all(node, wallet_address, progress, max_txs, limit=TXS_LIMIT_PER_QUE
             progress.report(page_for_progress, message, stage_name)
             page_for_progress += 1
 
-            elems, next_page, _, _ = api.txs_search(wallet_address, events_type, page, limit)
+            elems, next_page, _, _ = api.txs_search(
+                wallet_address, events_type, page, limit
+            )
 
             out.extend(elems)
             if next_page is None:
@@ -125,8 +133,9 @@ def get_txs_all(node, wallet_address, progress, max_txs, limit=TXS_LIMIT_PER_QUE
     return out
 
 
-def get_txs_pages_count(node, address, max_txs, limit=TXS_LIMIT_PER_QUERY, debug=False,
-                        events_types=None):
+def get_txs_pages_count(
+    node, address, max_txs, limit=TXS_LIMIT_PER_QUERY, debug=False, events_types=None
+):
     api = RpcAPI(node)
     api.debug = debug
     events_types = events_types if events_types else EVENTS_TYPE_LIST_DEFAULT
@@ -138,7 +147,9 @@ def get_txs_pages_count(node, address, max_txs, limit=TXS_LIMIT_PER_QUERY, debug
         num_txs = min(num_txs, max_txs)
         num_pages = math.ceil(num_txs / limit) if num_txs else 1
 
-        logging.info("event_type: %s, num_txs: %s, num_pages: %s", event_type, num_txs, num_pages)
+        logging.info(
+            "event_type: %s, num_txs: %s, num_pages: %s", event_type, num_txs, num_pages
+        )
         total_pages += num_pages
         total_txs += num_txs
 
@@ -171,14 +182,20 @@ def normalize_rpc_txns(node, elems, progress_rpc=None, stage_name=""):
         _add_messages_from_logs(elem)
 
         if progress_rpc and stage_name and i % 10 == 0:
-            progress_rpc.report(i, "Normalized {} of {} elements...".format(i, len(elems)), stage_name)
+            progress_rpc.report(
+                i, "Normalized {} of {} elements...".format(i, len(elems)), stage_name
+            )
 
     if progress_rpc and stage_name:
-        progress_rpc.report(len(elems), "Normalized {} of {} elements...".format(len(elems), len(elems)), stage_name)
+        progress_rpc.report(
+            len(elems),
+            "Normalized {} of {} elements...".format(len(elems), len(elems)),
+            stage_name,
+        )
 
 
 def _decode(elem):
-    """ Modifies transaction data with decoded version """
+    """Modifies transaction data with decoded version"""
     try:
         elem["tx_result"]["log"] = ast.literal_eval(elem["tx_result"]["log"])
     except SyntaxError as e:
@@ -192,8 +209,10 @@ def _decode(elem):
         for kv in event["attributes"]:
             k, v = kv["key"], kv["value"]
 
-            kv["key"] = base64.b64decode(k).decode() if k else ""
-            kv["value"] = base64.b64decode(v).decode() if v else ""
+            if _isBase64(k):
+                kv["key"] = base64.b64decode(k).decode() if k else ""
+            if _isBase64(v):
+                kv["value"] = base64.b64decode(v).decode() if v else ""
 
     elem["tx"] = base64.b64decode(elem["tx"])
 
@@ -229,7 +248,7 @@ def _add_fee_from_cosmos_transaction_authinfo(elem):
                 "amount": [
                     {
                         "denom": fee_extractor_callback.fee_denom,
-                        "amount": fee_extractor_callback.fee_amount
+                        "amount": fee_extractor_callback.fee_amount,
                     }
                 ]
             }
@@ -252,12 +271,11 @@ def _add_messages_from_logs(elem):
                 continue
 
             message = _make_message_from_event_attributes(event_attributes)
+
             messages.append(message)
 
     # add messages into the transaction body element
-    elem["tx"]["body"] = {
-        "messages": messages
-    }
+    elem["tx"]["body"] = {"messages": messages}
 
 
 def _make_message_from_event_attributes(event_attributes):
@@ -270,7 +288,15 @@ def _make_message_from_event_attributes(event_attributes):
     #
     # note: we do not do any other combination of events to produce application
     # specific message fields and rely on transfer events to dictate any movement of coins
-    message["@type"] = message["action"]
-    del message["action"]
+    message["@type"] = message.get("action", "")
+    if message.get("action"):
+        del message["action"]
 
     return message
+
+
+def _isBase64(s):
+    try:
+        return base64.b64encode(base64.b64decode(s)) == s
+    except Exception:
+        return False
