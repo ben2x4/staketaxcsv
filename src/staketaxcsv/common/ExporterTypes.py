@@ -50,11 +50,7 @@ FORMATS = [
 LP_TREATMENT_TRANSFERS = "transfers"
 LP_TREATMENT_OMIT = "omit"
 LP_TREATMENT_TRADES = "trades"
-LP_TREATMENT_CHOICES = [
-    LP_TREATMENT_TRANSFERS,
-    LP_TREATMENT_OMIT,
-    LP_TREATMENT_TRADES
-]
+LP_TREATMENT_CHOICES = [LP_TREATMENT_TRANSFERS, LP_TREATMENT_OMIT, LP_TREATMENT_TRADES]
 LP_TREATMENT_DEFAULT = LP_TREATMENT_TRANSFERS
 
 # Note: TX_TYPE=_* means transaction is not included in non-default CSVs
@@ -67,12 +63,17 @@ TX_TYPE_STAKING = "STAKING"  # Staking reward
 TX_TYPE_AIRDROP = "AIRDROP"
 TX_TYPE_TRADE = "TRADE"
 TX_TYPE_TRANSFER = "TRANSFER"
+TX_TYPE_IBC_TRANSFER = "IBC_TRANSFER"
 TX_TYPE_SPEND = "SPEND"
 TX_TYPE_INCOME = "INCOME"
 TX_TYPE_BORROW = "BORROW"
 TX_TYPE_REPAY = "REPAY"
-TX_TYPE_LP_DEPOSIT = "LP_DEPOSIT"    # note: only koinly has export; others treat as transfer
-TX_TYPE_LP_WITHDRAW = "LP_WITHDRAW"  # note: only koinly has export; others treat as transfer
+TX_TYPE_LP_DEPOSIT = (
+    "LP_DEPOSIT"  # note: only koinly has export; others treat as transfer
+)
+TX_TYPE_LP_WITHDRAW = (
+    "LP_WITHDRAW"  # note: only koinly has export; others treat as transfer
+)
 TX_TYPE_MARGIN_TRADE_FEE = "MARGIN_TRADE_FEE"
 
 # Common non-exportable transactions
@@ -154,7 +155,7 @@ TX_TYPE_MISSING_TIMESTAMP = "_ERROR"
 TX_TYPE_SOL_LP_DEPOSIT = "_LP_DEPOSIT"
 TX_TYPE_SOL_LP_WITHDRAW = "_LP_WITHDRAW"
 TX_TYPE_SOL_LP_FARM = "_LP_FARM"
-TX_TYPE_SOL_REWARD_ZERO = "_REWARD_ZERO"   # Ray staking reward 0
+TX_TYPE_SOL_REWARD_ZERO = "_REWARD_ZERO"  # Ray staking reward 0
 TX_TYPE_SOL_SERUM_DEX = "_SERUM_DEX"
 TX_TYPE_SOL_TRANSFER_SELF = "_TRANSFER_SELF"
 TX_TYPE_SOL_WORMHOLE_NOOP = "_WORMHOLE_NOOP"
@@ -186,14 +187,33 @@ TX_TYPES_CSVEXPORT = [
 
 # stake.tax csv format
 ROW_FIELDS = [
-    "timestamp", "tx_type", "received_amount", "received_currency",
-    "sent_amount", "sent_currency", "fee", "fee_currency", "comment", "txid",
-    "url", "exchange", "wallet_address"
+    "timestamp",
+    "tx_type",
+    "received_amount",
+    "received_currency",
+    "sent_amount",
+    "sent_currency",
+    "fee",
+    "fee_currency",
+    "comment",
+    "txid",
+    "url",
+    "exchange",
+    "wallet_address",
 ]
 
 # fields used for unit testing
-TEST_ROW_FIELDS = ["timestamp", "tx_type", "received_amount", "received_currency",
-                   "sent_amount", "sent_currency", "fee", "fee_currency", "txid"]
+TEST_ROW_FIELDS = [
+    "timestamp",
+    "tx_type",
+    "received_amount",
+    "received_currency",
+    "sent_amount",
+    "sent_currency",
+    "fee",
+    "fee_currency",
+    "txid",
+]
 
 # cointracking csv format: https://cointracking.info/import/import_csv/
 CT_FIELD_TYPE = "Type"
@@ -209,9 +229,18 @@ CT_FIELD_COMMENT = "Comment"
 CT_FIELD_DATE = "Date"
 CT_FIELD_TXID = "Tx-ID"
 CT_FIELDS = [
-    CT_FIELD_TYPE, CT_FIELD_BUY_AMOUNT, CT_FIELD_BUY_CURRENCY, CT_FIELD_SELL_AMOUNT, CT_FIELD_SELL_CURRENCY,
-    CT_FIELD_FEE, CT_FIELD_FEE_CURRENCY, CT_FIELD_EXCHANGE, CT_FIELD_TRADE_GROUP, CT_FIELD_COMMENT, CT_FIELD_DATE,
-    CT_FIELD_TXID
+    CT_FIELD_TYPE,
+    CT_FIELD_BUY_AMOUNT,
+    CT_FIELD_BUY_CURRENCY,
+    CT_FIELD_SELL_AMOUNT,
+    CT_FIELD_SELL_CURRENCY,
+    CT_FIELD_FEE,
+    CT_FIELD_FEE_CURRENCY,
+    CT_FIELD_EXCHANGE,
+    CT_FIELD_TRADE_GROUP,
+    CT_FIELD_COMMENT,
+    CT_FIELD_DATE,
+    CT_FIELD_TXID,
 ]
 
 # tokentax csv format
@@ -237,7 +266,7 @@ TT_FIELDS = [
     TT_FIELD_EXCHANGE,
     TT_FIELD_GROUP,
     TT_FIELD_COMMENT,
-    TT_FIELD_DATE
+    TT_FIELD_DATE,
 ]
 
 # cointracker format
@@ -251,9 +280,15 @@ CR_FIELD_FEE_CURRENCY = "Fee Currency"
 CR_FIELD_TAG = "Tag"
 CR_FIELD_TRANSACTION_ID = "Transaction ID"  # Not real field.  Added for user danb
 CR_FIELDS = [
-    CR_FIELD_DATE, CR_FIELD_RECEIVED_QUANTITY, CR_FIELD_RECEIVED_CURRENCY,
-    CR_FIELD_SENT_QUANTITY, CR_FIELD_SENT_CURRENCY, CR_FIELD_FEE_AMOUNT,
-    CR_FIELD_FEE_CURRENCY, CR_FIELD_TAG, CR_FIELD_TRANSACTION_ID
+    CR_FIELD_DATE,
+    CR_FIELD_RECEIVED_QUANTITY,
+    CR_FIELD_RECEIVED_CURRENCY,
+    CR_FIELD_SENT_QUANTITY,
+    CR_FIELD_SENT_CURRENCY,
+    CR_FIELD_FEE_AMOUNT,
+    CR_FIELD_FEE_CURRENCY,
+    CR_FIELD_TAG,
+    CR_FIELD_TRANSACTION_ID,
 ]
 
 # coinledger format
@@ -269,8 +304,17 @@ CL_TYPE = "Type"
 CL_DESCRIPTION = "Description (Optional)"
 CL_TXHASH = "TxHash (Optional)"
 CL_FIELDS = [
-    CL_FIELD_DATE, CL_FIELD_PLATFORM, CL_FIELD_ASSET_SENT, CL_FIELD_AMOUNT_SENT, CL_FIELD_ASSET_RECEIVED,
-    CL_FIELD_AMOUNT_RECEIVED, CL_FEE_CURRENCY, CL_FEE_AMOUNT, CL_TYPE, CL_DESCRIPTION, CL_TXHASH
+    CL_FIELD_DATE,
+    CL_FIELD_PLATFORM,
+    CL_FIELD_ASSET_SENT,
+    CL_FIELD_AMOUNT_SENT,
+    CL_FIELD_ASSET_RECEIVED,
+    CL_FIELD_AMOUNT_RECEIVED,
+    CL_FEE_CURRENCY,
+    CL_FEE_AMOUNT,
+    CL_TYPE,
+    CL_DESCRIPTION,
+    CL_TXHASH,
 ]
 
 # tax.crypto.com format
@@ -286,9 +330,17 @@ CRCOM_FEE_CURRENCY = "Fee Currency"
 CRCOM_FEE_AMOUNT = "Fee Amount"
 CRCOM_FEE_NET_WORTH = "Fee Net Worth"
 CRCOM_FIELDS = [
-    CRCOM_DATE, CRCOM_TYPE, CRCOM_RECEIVED_CURRENCY, CRCOM_RECEIVED_AMOUNT, CRCOM_RECEIVED_NET_WORTH,
-    CRCOM_SENT_CURRENCY, CRCOM_SENT_AMOUNT, CRCOM_SENT_NET_WORTH, CRCOM_FEE_CURRENCY, CRCOM_FEE_AMOUNT,
-    CRCOM_FEE_NET_WORTH
+    CRCOM_DATE,
+    CRCOM_TYPE,
+    CRCOM_RECEIVED_CURRENCY,
+    CRCOM_RECEIVED_AMOUNT,
+    CRCOM_RECEIVED_NET_WORTH,
+    CRCOM_SENT_CURRENCY,
+    CRCOM_SENT_AMOUNT,
+    CRCOM_SENT_NET_WORTH,
+    CRCOM_FEE_CURRENCY,
+    CRCOM_FEE_AMOUNT,
+    CRCOM_FEE_NET_WORTH,
 ]
 
 # koinly format
@@ -316,7 +368,7 @@ KOINLY_FIELDS = [
     KOINLY_FIELD_NET_WORTH_CURRENCY,
     KOINLY_FIELD_LABEL,
     KOINLY_FIELD_DESCRIPTION,
-    KOINLY_FIELD_TXHASH
+    KOINLY_FIELD_TXHASH,
 ]
 
 # cryptotaxcalculator.io format
@@ -344,7 +396,7 @@ CALC_FIELDS = [
     CALC_FIELD_FROM,
     CALC_FIELD_TO,
     CALC_FIELD_ID,
-    CALC_FIELD_DESCRIPTION
+    CALC_FIELD_DESCRIPTION,
 ]
 
 # accointing .xlsl fields
@@ -394,7 +446,7 @@ ZEN_FIELDS = [
     ZEN_FIELD_FEE_AMOUNT,
     ZEN_FIELD_FEE_CURRENCY,
     ZEN_FIELD_EXCHANGE,
-    ZEN_FIELD_US_BASED
+    ZEN_FIELD_US_BASED,
 ]
 
 # taxbit fields
@@ -422,7 +474,7 @@ TAXBIT_FIELDS = [
     TAXBIT_FIELD_FEE,
     TAXBIT_FIELD_FEE_CURRENCY,
     TAXBIT_FIELD_EXCHANGE_TRANSACTION_ID,
-    TAXBIT_FIELD_BLOCKCHAIN_TRANSACTION_HASH
+    TAXBIT_FIELD_BLOCKCHAIN_TRANSACTION_HASH,
 ]
 
 # recap format
@@ -435,7 +487,7 @@ RECAP_FIELD_OUTORSELLCURRENCY = "OutOrSellCurrency"
 RECAP_FIELD_FEEAMOUNT = "FeeAmount"
 RECAP_FIELD_FEECURRENCY = "FeeCurrency"
 RECAP_FIELD_DESCRIPTION = "Description"  # Not an importable field.
-RECAP_FIELD_TXID = "Transaction ID"      # Not an importable field.
+RECAP_FIELD_TXID = "Transaction ID"  # Not an importable field.
 RECAP_FIELDS = [
     RECAP_FIELD_TYPE,
     RECAP_FIELD_DATE,
@@ -446,7 +498,7 @@ RECAP_FIELDS = [
     RECAP_FIELD_FEEAMOUNT,
     RECAP_FIELD_FEECURRENCY,
     RECAP_FIELD_DESCRIPTION,
-    RECAP_FIELD_TXID
+    RECAP_FIELD_TXID,
 ]
 
 # bitcoin.tax format

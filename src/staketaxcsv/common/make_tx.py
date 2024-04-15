@@ -23,117 +23,281 @@ from staketaxcsv.common.ExporterTypes import (
 from staketaxcsv.settings_csv import DONATION_WALLETS
 
 
-def make_swap_tx(txinfo, sent_amount, sent_currency, received_amount, received_currency,
-                 txid=None, empty_fee=False, z_index=0):
-    return _make_tx_exchange(txinfo, sent_amount, sent_currency, received_amount, received_currency,
-                             TX_TYPE_TRADE, txid, empty_fee, z_index)
+def make_swap_tx(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    received_amount,
+    received_currency,
+    txid=None,
+    empty_fee=False,
+    z_index=0,
+):
+    return _make_tx_exchange(
+        txinfo,
+        sent_amount,
+        sent_currency,
+        received_amount,
+        received_currency,
+        TX_TYPE_TRADE,
+        txid,
+        empty_fee,
+        z_index,
+    )
 
 
-def make_airdrop_tx(txinfo, reward_amount, reward_currency, txid=None, empty_fee=False, z_index=0):
+def make_airdrop_tx(
+    txinfo, reward_amount, reward_currency, txid=None, empty_fee=False, z_index=0
+):
     return _make_tx_received(
-        txinfo, reward_amount, reward_currency, TX_TYPE_AIRDROP, txid, empty_fee=empty_fee, z_index=z_index)
+        txinfo,
+        reward_amount,
+        reward_currency,
+        TX_TYPE_AIRDROP,
+        txid,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
 
 
-def make_income_tx(txinfo, income_amount, income_currency, txid=None, empty_fee=False, z_index=0):
+def make_income_tx(
+    txinfo, income_amount, income_currency, txid=None, empty_fee=False, z_index=0
+):
     return _make_tx_received(
-        txinfo, income_amount, income_currency, TX_TYPE_INCOME, txid, empty_fee=empty_fee, z_index=z_index)
+        txinfo,
+        income_amount,
+        income_currency,
+        TX_TYPE_INCOME,
+        txid,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
 
 
-def make_reward_tx(txinfo, reward_amount, reward_currency, txid=None, empty_fee=False, z_index=0):
-    """ Staking reward transaction """
-    return _make_tx_received(txinfo, reward_amount, reward_currency, TX_TYPE_STAKING, txid, empty_fee, z_index=z_index)
+def make_reward_tx(
+    txinfo, reward_amount, reward_currency, txid=None, empty_fee=False, z_index=0
+):
+    """Staking reward transaction"""
+    return _make_tx_received(
+        txinfo,
+        reward_amount,
+        reward_currency,
+        TX_TYPE_STAKING,
+        txid,
+        empty_fee,
+        z_index=z_index,
+    )
 
 
 def make_spend_tx(txinfo, sent_amount, sent_currency, z_index=0):
-    return _make_tx_sent(txinfo, sent_amount, sent_currency, TX_TYPE_SPEND, z_index=z_index)
+    return _make_tx_sent(
+        txinfo, sent_amount, sent_currency, TX_TYPE_SPEND, z_index=z_index
+    )
 
 
 def make_spend_fee_tx(txinfo, fee_amount, fee_currency, z_index=0):
-    return _make_tx_sent(txinfo, fee_amount, fee_currency, TX_TYPE_SPEND, z_index=z_index, empty_fee=True)
+    return _make_tx_sent(
+        txinfo, fee_amount, fee_currency, TX_TYPE_SPEND, z_index=z_index, empty_fee=True
+    )
 
 
-def make_transfer_out_tx(txinfo, sent_amount, sent_currency, dest_address=None, z_index=0):
+def make_transfer_out_tx(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    dest_address=None,
+    z_index=0,
+    transaction_type=TX_TYPE_TRANSFER,
+):
     if dest_address and dest_address in DONATION_WALLETS:
         return make_spend_tx(txinfo, sent_amount, sent_currency, z_index)
     else:
-        return _make_tx_sent(txinfo, sent_amount, sent_currency, TX_TYPE_TRANSFER, z_index=z_index)
+        return _make_tx_sent(
+            txinfo, sent_amount, sent_currency, transaction_type, z_index=z_index
+        )
 
 
-def make_transfer_in_tx(txinfo, received_amount, received_currency, z_index=0):
+def make_transfer_in_tx(
+    txinfo,
+    received_amount,
+    received_currency,
+    z_index=0,
+    transaction_type=TX_TYPE_TRANSFER,
+):
     # Adjust to no fees for transfer-in transactions
     txinfo.fee = ""
     txinfo.fee_currency = ""
 
     if DONATION_WALLETS and txinfo.wallet_address in DONATION_WALLETS:
-        row = _make_tx_received(txinfo, received_amount, received_currency, TX_TYPE_INCOME, z_index=z_index)
+        row = _make_tx_received(
+            txinfo, received_amount, received_currency, TX_TYPE_INCOME, z_index=z_index
+        )
         row.comment = "donation " + row.comment
         return row
     else:
-        return _make_tx_received(txinfo, received_amount, received_currency, TX_TYPE_TRANSFER, z_index=z_index)
+        return _make_tx_received(
+            txinfo,
+            received_amount,
+            received_currency,
+            transaction_type,
+            z_index=z_index,
+        )
 
 
 def make_transfer_self(txinfo):
     return make_simple_tx(txinfo, TX_TYPE_SOL_TRANSFER_SELF)
 
 
-def make_lp_deposit_tx(txinfo, sent_amount, sent_currency, lp_amount, lp_currency, txid=None, empty_fee=False,
-                       z_index=0):
+def make_lp_deposit_tx(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    lp_amount,
+    lp_currency,
+    txid=None,
+    empty_fee=False,
+    z_index=0,
+):
     row = _make_tx_exchange(
-        txinfo, sent_amount, sent_currency, lp_amount, lp_currency, TX_TYPE_LP_DEPOSIT, txid, empty_fee,
-        z_index=z_index)
+        txinfo,
+        sent_amount,
+        sent_currency,
+        lp_amount,
+        lp_currency,
+        TX_TYPE_LP_DEPOSIT,
+        txid,
+        empty_fee,
+        z_index=z_index,
+    )
     row.comment = "lp_deposit " + txinfo.comment
     return row
 
 
-def make_lp_withdraw_tx(txinfo, lp_amount, lp_currency, received_amount, received_currency, txid=None,
-                        empty_fee=False, z_index=0):
+def make_lp_withdraw_tx(
+    txinfo,
+    lp_amount,
+    lp_currency,
+    received_amount,
+    received_currency,
+    txid=None,
+    empty_fee=False,
+    z_index=0,
+):
     row = _make_tx_exchange(
-        txinfo, lp_amount, lp_currency, received_amount, received_currency,
-        TX_TYPE_LP_WITHDRAW, txid, empty_fee, z_index)
+        txinfo,
+        lp_amount,
+        lp_currency,
+        received_amount,
+        received_currency,
+        TX_TYPE_LP_WITHDRAW,
+        txid,
+        empty_fee,
+        z_index,
+    )
     row.comment = "lp_withdraw " + txinfo.comment
     return row
 
 
 def make_lp_stake_tx(txinfo, lp_amount, lp_currency, empty_fee=False, z_index=0):
-    return _make_tx_sent(txinfo, lp_amount, lp_currency, TX_TYPE_LP_STAKE, empty_fee=empty_fee, z_index=z_index)
+    return _make_tx_sent(
+        txinfo,
+        lp_amount,
+        lp_currency,
+        TX_TYPE_LP_STAKE,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
 
 
 def make_lp_unstake_tx(txinfo, lp_amount, lp_currency, z_index=0):
-    return _make_tx_received(txinfo, lp_amount, lp_currency, TX_TYPE_LP_UNSTAKE, z_index=z_index)
+    return _make_tx_received(
+        txinfo, lp_amount, lp_currency, TX_TYPE_LP_UNSTAKE, z_index=z_index
+    )
 
 
 def make_stake_tx(txinfo, lp_amount, lp_currency, empty_fee=False, z_index=0):
-    return _make_tx_sent(txinfo, lp_amount, lp_currency, TX_TYPE_STAKE, empty_fee=empty_fee, z_index=z_index)
+    return _make_tx_sent(
+        txinfo,
+        lp_amount,
+        lp_currency,
+        TX_TYPE_STAKE,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
 
 
 def make_unstake_tx(txinfo, lp_amount, lp_currency, empty_fee=False, z_index=0):
-    return _make_tx_received(txinfo, lp_amount, lp_currency, TX_TYPE_UNSTAKE, empty_fee=empty_fee, z_index=z_index)
+    return _make_tx_received(
+        txinfo,
+        lp_amount,
+        lp_currency,
+        TX_TYPE_UNSTAKE,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
 
 
 def make_deposit_collateral_tx(txinfo, sent_amount, sent_currency, z_index=0):
-    return _make_tx_sent(txinfo, sent_amount, sent_currency, TX_TYPE_DEPOSIT_COLLATERAL, z_index=z_index)
+    return _make_tx_sent(
+        txinfo, sent_amount, sent_currency, TX_TYPE_DEPOSIT_COLLATERAL, z_index=z_index
+    )
 
 
-def make_withdraw_collateral_tx(txinfo, received_amount, received_currency, empty_fee=False, z_index=0):
+def make_withdraw_collateral_tx(
+    txinfo, received_amount, received_currency, empty_fee=False, z_index=0
+):
     return _make_tx_received(
-        txinfo, received_amount, received_currency, TX_TYPE_WITHDRAW_COLLATERAL, empty_fee=empty_fee, z_index=z_index)
+        txinfo,
+        received_amount,
+        received_currency,
+        TX_TYPE_WITHDRAW_COLLATERAL,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
 
 
-def make_liquidate_tx(txinfo, sent_amount, sent_currency, received_amount, received_currency,
-                      txid=None, empty_fee=False, z_index=0):
+def make_liquidate_tx(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    received_amount,
+    received_currency,
+    txid=None,
+    empty_fee=False,
+    z_index=0,
+):
     return _make_tx_exchange(
-        txinfo, sent_amount, sent_currency, received_amount, received_currency, TX_TYPE_TRADE, txid, empty_fee, z_index)
+        txinfo,
+        sent_amount,
+        sent_currency,
+        received_amount,
+        received_currency,
+        TX_TYPE_TRADE,
+        txid,
+        empty_fee,
+        z_index,
+    )
 
 
-def make_borrow_tx(txinfo, received_amount, received_currency, empty_fee=False, z_index=0):
+def make_borrow_tx(
+    txinfo, received_amount, received_currency, empty_fee=False, z_index=0
+):
     row = _make_tx_received(
-        txinfo, received_amount, received_currency, TX_TYPE_BORROW, empty_fee=empty_fee, z_index=z_index)
+        txinfo,
+        received_amount,
+        received_currency,
+        TX_TYPE_BORROW,
+        empty_fee=empty_fee,
+        z_index=z_index,
+    )
     row.comment = "borrow " + txinfo.comment
     return row
 
 
 def make_repay_tx(txinfo, sent_amount, sent_currency, z_index=0):
-    row = _make_tx_sent(txinfo, sent_amount, sent_currency, TX_TYPE_REPAY, z_index=z_index)
+    row = _make_tx_sent(
+        txinfo, sent_amount, sent_currency, TX_TYPE_REPAY, z_index=z_index
+    )
     row.comment = "repay " + txinfo.comment
     return row
 
@@ -155,7 +319,7 @@ def make_simple_tx(txinfo, tx_type, z_index=0):
         txid=txinfo.txid,
         url=txinfo.url,
         z_index=z_index,
-        comment=txinfo.comment
+        comment=txinfo.comment,
     )
     return row
 
@@ -164,11 +328,24 @@ def make_unknown_tx(txinfo, z_index=0):
     return make_simple_tx(txinfo, TX_TYPE_UNKNOWN, z_index)
 
 
-def make_unknown_tx_with_transfer(txinfo, sent_amount, sent_currency, received_amount,
-                                  received_currency, empty_fee=False, z_index=0):
+def make_unknown_tx_with_transfer(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    received_amount,
+    received_currency,
+    empty_fee=False,
+    z_index=0,
+):
     return _make_tx_exchange(
-        txinfo, sent_amount, sent_currency, received_amount, received_currency, TX_TYPE_UNKNOWN,
-        empty_fee=empty_fee, z_index=z_index
+        txinfo,
+        sent_amount,
+        sent_currency,
+        received_amount,
+        received_currency,
+        TX_TYPE_UNKNOWN,
+        empty_fee=empty_fee,
+        z_index=z_index,
     )
 
 
@@ -176,15 +353,36 @@ def make_excluded_tx(txinfo):
     return make_simple_tx(txinfo, TX_TYPE_EXCLUDED)
 
 
-def make_excluded_tx_with_transfer(txinfo, sent_amount, sent_currency, received_amount,
-                                  received_currency, empty_fee=False, z_index=0):
+def make_excluded_tx_with_transfer(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    received_amount,
+    received_currency,
+    empty_fee=False,
+    z_index=0,
+):
     return _make_tx_exchange(
-        txinfo, sent_amount, sent_currency, received_amount, received_currency, TX_TYPE_EXCLUDED,
-        empty_fee=empty_fee, z_index=z_index
+        txinfo,
+        sent_amount,
+        sent_currency,
+        received_amount,
+        received_currency,
+        TX_TYPE_EXCLUDED,
+        empty_fee=empty_fee,
+        z_index=z_index,
     )
 
 
-def _make_tx_received(txinfo, received_amount, received_currency, tx_type, txid=None, empty_fee=False, z_index=0):
+def _make_tx_received(
+    txinfo,
+    received_amount,
+    received_currency,
+    tx_type,
+    txid=None,
+    empty_fee=False,
+    z_index=0,
+):
     txid = txid if txid else txinfo.txid
     fee = "" if empty_fee else txinfo.fee
     fee_currency = txinfo.fee_currency if fee else ""
@@ -203,12 +401,14 @@ def _make_tx_received(txinfo, received_amount, received_currency, tx_type, txid=
         txid=txid,
         url=txinfo.url,
         z_index=z_index,
-        comment=txinfo.comment
+        comment=txinfo.comment,
     )
     return row
 
 
-def _make_tx_sent(txinfo, sent_amount, sent_currency, tx_type, empty_fee=False, z_index=0):
+def _make_tx_sent(
+    txinfo, sent_amount, sent_currency, tx_type, empty_fee=False, z_index=0
+):
     fee = "" if empty_fee else txinfo.fee
     fee_currency = txinfo.fee_currency if fee else ""
 
@@ -226,13 +426,22 @@ def _make_tx_sent(txinfo, sent_amount, sent_currency, tx_type, empty_fee=False, 
         txid=txinfo.txid,
         url=txinfo.url,
         z_index=z_index,
-        comment=txinfo.comment
+        comment=txinfo.comment,
     )
     return row
 
 
-def _make_tx_exchange(txinfo, sent_amount, sent_currency, received_amount, received_currency, tx_type,
-                      txid=None, empty_fee=False, z_index=0):
+def _make_tx_exchange(
+    txinfo,
+    sent_amount,
+    sent_currency,
+    received_amount,
+    received_currency,
+    tx_type,
+    txid=None,
+    empty_fee=False,
+    z_index=0,
+):
     txid = txid if txid else txinfo.txid
     fee = "" if empty_fee else txinfo.fee
     fee_currency = txinfo.fee_currency if fee else ""
@@ -251,13 +460,13 @@ def _make_tx_exchange(txinfo, sent_amount, sent_currency, received_amount, recei
         txid=txid,
         url=txinfo.url,
         z_index=z_index,
-        comment=txinfo.comment
+        comment=txinfo.comment,
     )
     return row
 
 
 def ingest_rows(exporter, txinfo, rows):
-    """ Utility function to add multiple rows to CSV for single transaction. """
+    """Utility function to add multiple rows to CSV for single transaction."""
     if len(rows) == 0:
         # No transactions.  Just make a "spend fee" row.
         if txinfo.fee:

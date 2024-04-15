@@ -1,4 +1,4 @@
-
+from staketaxcsv.common.ExporterTypes import TX_TYPE_IBC_TRANSFER, TX_TYPE_TRANSFER
 from staketaxcsv.common.ibc import constants as co
 from staketaxcsv.common.ibc import make_tx, util_ibc
 
@@ -19,12 +19,14 @@ def handle_unknown(exporter, txinfo, msginfo):
 
 
 def handle_simple_outbound(exporter, txinfo, msginfo):
-    """ Handles tx with 1 outbound transfer """
+    """Handles tx with 1 outbound transfer"""
     transfers_in, transfers_out = msginfo.transfers
 
     if len(transfers_in) == 0 and len(transfers_out) == 1:
         amount, currency = transfers_out[0]
-        row = make_tx.make_simple_tx_with_transfers(txinfo, msginfo, amount, currency, "", "")
+        row = make_tx.make_simple_tx_with_transfers(
+            txinfo, msginfo, amount, currency, "", ""
+        )
         exporter.ingest_row(row)
         return
 
@@ -61,23 +63,43 @@ def handle_staking(exporter, txinfo, msginfo):
 
 def handle_transfer_ibc(exporter, txinfo, msginfo):
     transfers_in, transfers_out = msginfo.transfers_event
-    _handle_transfer(exporter, txinfo, msginfo, transfers_in, transfers_out)
+    _handle_transfer(
+        exporter, txinfo, msginfo, transfers_in, transfers_out, TX_TYPE_IBC_TRANSFER
+    )
 
 
 def handle_transfer(exporter, txinfo, msginfo):
     transfers_in, transfers_out = msginfo.transfers_event
-    _handle_transfer(exporter, txinfo, msginfo, transfers_in, transfers_out)
+    _handle_transfer(
+        exporter, txinfo, msginfo, transfers_in, transfers_out, TX_TYPE_TRANSFER
+    )
 
 
-def _handle_transfer(exporter, txinfo, msginfo, transfers_in, transfers_out):
+def _handle_transfer(
+    exporter,
+    txinfo,
+    msginfo,
+    transfers_in,
+    transfers_out,
+    transaction_type=TX_TYPE_TRANSFER,
+):
     if len(transfers_in) == 1 and len(transfers_out) == 0:
         amount, currency, _, _ = transfers_in[0]
-        row = make_tx.make_transfer_in_tx(txinfo, msginfo, amount, currency)
+        row = make_tx.make_transfer_in_tx(
+            txinfo, msginfo, amount, currency, transaction_type=transaction_type
+        )
         exporter.ingest_row(row)
         return
     elif len(transfers_in) == 0 and len(transfers_out) == 1:
         amount, currency, source, dest = transfers_out[0]
-        row = make_tx.make_transfer_out_tx(txinfo, msginfo, amount, currency, dest=dest)
+        row = make_tx.make_transfer_out_tx(
+            txinfo,
+            msginfo,
+            amount,
+            currency,
+            dest=dest,
+            transaction_type=transaction_type,
+        )
         exporter.ingest_row(row)
         return
     elif len(transfers_in) == 0 and len(transfers_out) == 0:
@@ -119,17 +141,29 @@ def unknown_txs_detect_transfers(txinfo, msginfo):
         received_amount, received_currency = transfers_in[0]
 
         row = make_tx.make_unknown_tx_with_transfer(
-            txinfo, msginfo, sent_amount, sent_currency, received_amount, received_currency)
+            txinfo,
+            msginfo,
+            sent_amount,
+            sent_currency,
+            received_amount,
+            received_currency,
+        )
         return [row]
     else:
         # Handle unknown transaction as separate transfers for each row.
         rows = []
         for sent_amount, sent_currency in transfers_out:
             rows.append(
-                make_tx.make_unknown_tx_with_transfer(txinfo, msginfo, sent_amount, sent_currency, "", ""))
+                make_tx.make_unknown_tx_with_transfer(
+                    txinfo, msginfo, sent_amount, sent_currency, "", ""
+                )
+            )
         for received_amount, received_currency in transfers_in:
             rows.append(
-                make_tx.make_unknown_tx_with_transfer(txinfo, msginfo, "", "", received_amount, received_currency))
+                make_tx.make_unknown_tx_with_transfer(
+                    txinfo, msginfo, "", "", received_amount, received_currency
+                )
+            )
         return rows
 
 
@@ -159,9 +193,9 @@ def _is_exec_rpc_data(msginfo):
     message = msginfo.message
 
     if (
-        msginfo.msg_type == co.MSG_TYPE_EXEC and
-        message.get("@type", None) == "/cosmos.authz.v1beta1.MsgExec" and
-        message.get("module", None) == "staking"
+        msginfo.msg_type == co.MSG_TYPE_EXEC
+        and message.get("@type", None) == "/cosmos.authz.v1beta1.MsgExec"
+        and message.get("module", None) == "staking"
     ):
         return True
     else:
@@ -181,8 +215,15 @@ def _handle_exec_lcd_data(exporter, txinfo, msginfo):
 
     # execs can have multiple messages, but the most common are to delegate and withdraw
     # if we can ensure our messages only contain those messages, we can reuse the staking handler
-    if msg_types.issubset([co.MSG_TYPE_DELEGATE, co.MSG_TYPE_REDELEGATE, co.MSG_TYPE_WITHDRAW_REWARD,
-                          co.MSG_TYPE_WITHDRAW_COMMISSION, co.MSG_TYPE_UNDELEGATE]):
+    if msg_types.issubset(
+        [
+            co.MSG_TYPE_DELEGATE,
+            co.MSG_TYPE_REDELEGATE,
+            co.MSG_TYPE_WITHDRAW_REWARD,
+            co.MSG_TYPE_WITHDRAW_COMMISSION,
+            co.MSG_TYPE_UNDELEGATE,
+        ]
+    ):
         transfers_in, transfers_out = msginfo.transfers
         if len(transfers_in) == 0:
             # ignore delegatory messages not related to this wallet address to reduce verbosity
